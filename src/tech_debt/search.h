@@ -2,10 +2,9 @@
 #define SEARCH_H
 
 #include "gl_const.h"
-#include "logger.h"
 #include "map.h"
 #include "searchresult.h"
-#include "xmllogger.h"
+#include "logger.h"
 
 class Search {
 

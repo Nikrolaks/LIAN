@@ -1,12 +1,9 @@
-#ifndef NODE_H
-#define NODE_H
+#pragma once
+
+#include "common.h"
 
 #include "gl_const.h"
 
-#include <limits>
-#include <list>
-#include <iostream>
-#include <cmath>
 
 struct circleNode
 {
@@ -23,10 +20,10 @@ struct Node {
 
     Node*   parent;
 
-    int     i, j;
-    int   radius;
-    float   F;
-    float   g;
+    int      i, j;
+    double   radius;
+    double   F;
+    double   g;
 
     double angle;
 
@@ -70,5 +67,3 @@ struct Node {
             return i * width + j;
     }
 };
-
-#endif

@@ -1,42 +1,34 @@
-#ifndef MAP_H
-#define MAP_H
+#pragma once
+
+#include "common.h"
 
 #include "gl_const.h"
 #include "tinyxml/tinyxml.h"
 #include "tinyxml/tinystr.h"
 
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-#include <string>
-
 
 class Map {
-
-private:
-    int ** Grid;
-    int height, width;
-    double CellSize;
-
 public:
-    Map();
-    ~Map();
-    bool getMap(const char* FileName);
+    explicit Map(const std::string& fileName);
 
-    bool CellIsTraversable (int curr_i, int curr_j) const;
-    bool CellOnGrid (int curr_i, int curr_j) const;
-    bool CellIsObstacle(int curr_i, int curr_j) const;
+    bool cellIsTraversable(vec<std::size_t> pos) const;
+    bool cellOnGrid(vec<std::size_t> pos) const;
+    bool cellIsObstacle(vec<std::size_t> pos) const;
 
-    int* operator [] (int i);
-    const int* operator [] (int i) const;
+    std::vector<int> &operator[](std::size_t i);
+    const std::vector<int> &operator[](std::size_t i) const;
 
-    int getWidth() const;
-    int getHeight() const;
+    std::size_t getWidth() const;
+    std::size_t getHeight() const;
     double getCellSize() const;
 
+    vec<std::size_t> getStart() const;
+    vec<std::size_t> getGoal() const;
 
-    int start_i, start_j;
-    int goal_i, goal_j;
+private:
+    vec<std::size_t> start_;
+    vec<std::size_t> goal_;
+    std::vector<std::vector<int>> grid_;
+    std::size_t height_ = 0, width_ = 0;
+    double cellSize_;
 };
-
-#endif

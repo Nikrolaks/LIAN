@@ -1,77 +1,69 @@
-#ifndef LIANSEARCH_H
-#define LIANSEARCH_H
+#pragma once
+
+#include "common.h"
 
 #include "gl_const.h"
 #include "map.h"
 #include "node.h"
 #include "openlist.h"
 #include "search.h"
+#include "logger.h"
 
-#include <chrono>
-#include <cmath>
-#include <list>
-#include <limits>
-#include <unordered_map>
-#include <vector>
 
 class LianSearch : public Search {
-
 public:
-
-    // Constructor with parameters
-    LianSearch(float angleLimit_, int distance_, float weight_, unsigned int steplimit_,
-               float curvatureHeuristicWeight_, bool postsmoother_, float decreaseDistanceFactor_,
-               int distanceMin_, double PivotRadius_, int numOfParentsToIncreaseRadius_);
+    LianSearch(float angleLimit, int distance, float weight, unsigned int steplimit,
+               float curvatureHeuristicWeight, bool postsmoother, float decreaseDistanceFactor,
+               int distanceMin, double PivotRadius, int numOfParentsToIncreaseRadius);
 
     ~LianSearch();
     SearchResult startSearch(Logger *Log, const Map &map); // General searching algorithm
 
 private:
+    vec<std::size_t> start_, goal_;
 
-    float angleLimit; // Maximal value of deviation angle (turning limit)
+    float angleLimit_; // Maximal value of deviation angle (turning limit)
 
-    int distance; // Minimal value of length of steps
+    int distance_; // Minimal value of length of steps
 
-    int numOfParentsToIncreaseRadius;
+    int numOfParentsToIncreaseRadius_;
 
-    std::vector<int> listOfDistances;
-    int listOfDistancesSize;
+    std::vector<int> listOfDistances_;
+    int listOfDistancesSize_;
 
-    float weight;  // Heuristics weight
+    float weight_;  // Heuristics weight
 
-    bool postsmoother; // Smoothing the path after the algorithm
+    bool postsmoother_; // Smoothing the path after the algorithm
 
     // Heurisic coefficient:
     // If there is heuristic that checks deviation of trajectory from line on each
     // step, this deviation is multiplyed by this coefficient
-    float curvatureHeuristicWeight;
+    float curvatureHeuristicWeight_;
 
-    float pivotRadius; // Radius of safety circle around every turn point.
+    float pivotRadius_; // Radius of safety circle around every turn point.
 
-    unsigned int stepLimit; // Maximum number of iterations, allowed for the algorithm
+    unsigned int stepLimit_; // Maximum number of iterations, allowed for the algorithm
 
-    unsigned int closeSize; // Number of elements in close (elements that were already examined)
+    unsigned int closeSize_; // Number of elements in close (elements that were already examined)
 
-    float decreaseDistanceFactor; // Value for decreasing the initial distance value
-    int distanceMin; // Minimal distance value
+    float decreaseDistanceFactor_; // Value for decreasing the initial distance value
+    int distanceMin_; // Minimal distance value
 
-    std::vector<std::vector<circleNode> > circleNodes; // Virtual nodes that create circle around the cell
+    std::vector<std::vector<circleNode>> circleNodes_; // Virtual nodes that create circle around the cell
 
-    std::vector<std::pair<int,int> > pivotCircle;  // Vector of nodes (shifts) for pivot security check
+    std::vector<std::pair<int,int>> pivotCircle_;  // Vector of nodes (shifts) for pivot security check
 
-    std::vector<float> angles;
+    std::vector<float> angles_;
 
-    std::list<Node> lppath, hppath; // Final path in two representations
-    OpenList open; // Open : list of nodes waiting for expanding
+    std::list<Node> lppath_, hppath_; // Final path in two representations
+    OpenList open_; // Open : list of nodes waiting for expanding
 
-    std::unordered_multimap<int, Node> close; // Close: list of nodes that were already expanded
+    std::unordered_multimap<int, Node> close_; // Close: list of nodes that were already expanded
 
     // Method that calculate Bresenham's Circle (center - (0, 0)) and writing list of created nodes to circleNodes
     void calculateCircle(int radius); // Radius - radius of the circle in cells
 
     void calculatePivotCircle();
-
-    int calculatePreferableRadius(const Map &map); // Method calculates the most preferable radius depending on the parameters of the initial map
 
     void calculateDistances();
 
@@ -91,7 +83,6 @@ private:
 
     int tryToIncreaseRadius(Node curNode);
     bool tryToDecreaseRadius(Node &curNode, int width);
-    void findSuccessors(const Node curNode,std::vector<Node> &successors, const Map &map);
     void update(const Node current_node, Node new_node, bool &successors, const Map &map);
     bool expand(const Node curNode, const Map &map);
     std::list<Node> smoothPath(const std::list<Node>& path, const Map& map);
@@ -99,5 +90,3 @@ private:
     void makeSecondaryPath();
     double makeAngles();
 };
-
-#endif // LIANSEARCH_H

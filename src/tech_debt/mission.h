@@ -1,24 +1,19 @@
-#ifndef MISSION_H
-#define MISSION_H
+#pragma once
+
+#include "common.h"
 
 #include "config.h"
 #include "liansearch.h"
 #include "map.h"
 #include "search.h"
 #include "searchresult.h"
-#include "xmllogger.h"
-
-
-#include <string>
+#include "logger.h"
 
 class Mission {
-
 public:
-    Mission(const char* fName);
+    Mission(const std::string& fName);
     ~Mission();
 
-    bool getMap();
-    bool getConfig();
     bool createLog();
     void createSearch();
     void startSearch();
@@ -26,16 +21,13 @@ public:
     void saveSearchResultsToLog();
 
 private:
-    Map         map;
     Config      config;
+    Map         map;
 
     Search      *search;
     Logger      *logger;
 
-    const char* fileName;
+    const std::string fileName;
 
     SearchResult sr;
 };
-
-#endif
-

@@ -1,29 +1,16 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
-#include "gl_const.h"
-#include "tinyxml/tinyxml.h"
-#include "tinyxml/tinystr.h"
-
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-#include <string>
+#include "common.h"
 
 class Config {
+public:
+    explicit Config(const std::string& fileName);
+
+    float getParamValue(std::size_t i) const;
+
+    const std::string& getMapFileName() const;
 
 private:
-    int N;
-    float *searchParams;
-
-public:
-    Config();
-    Config(int numParams, float *paramArray);
-    ~Config();
-
-    float getParamValue(int i) const;
-
-    bool getConfig(const char* FileName);
+    std::vector<float> searchParams_;
+    std::string mapFileName_;
 };
-
-#endif
