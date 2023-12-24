@@ -137,33 +137,12 @@ Mission::~Mission() {
 }
 
 void Mission::createSearch() {
-    search = new LianSearch((float)config.getParamValue(CN_PT_AL),
-        (int)config.getParamValue(CN_PT_D),
-        (float)config.getParamValue(CN_PT_W),
-        (unsigned int)config.getParamValue(CN_PT_SL),
-        (float)config.getParamValue(CN_PT_CHW),
-        (bool)config.getParamValue(CN_PT_PS),
-        (float)config.getParamValue(CN_PT_DDF),
-        (int)config.getParamValue(CN_PT_DM),
-        (double)config.getParamValue(CN_PT_PC),
-        (int)config.getParamValue(CN_PT_NOP));
+    search = new LianSearch(config.params());
 }
 
 bool Mission::createLog() {
-    if (config.getParamValue(CN_PT_LOGLVL) == CN_LOGLVL_LOW || config.getParamValue(CN_PT_LOGLVL) == CN_LOGLVL_HIGH ||
-        config.getParamValue(CN_PT_LOGLVL) == CN_LOGLVL_MED || config.getParamValue(CN_PT_LOGLVL) == CN_LOGLVL_TINY ||
-        config.getParamValue(CN_PT_LOGLVL) - CN_LOGLVL_ITER < 0.001) {
-        logger = new Logger(config.getParamValue(CN_PT_LOGLVL));
-    }
-    else if (config.getParamValue(CN_PT_LOGLVL) == CN_LOGLVL_NO) {
-        logger = new Logger(config.getParamValue(CN_PT_LOGLVL));
-        return true;
-    }
-    else {
-        std::cout << "'loglevel' is not correctly specified in input XML-file.\n";
-        return false;
-    }
-    return logger->getLog("example1.xml");
+    logger = new Logger(config.params().logLevel);
+    return logger->getLog(fileName);
 }
 
 void Mission::startSearch() {

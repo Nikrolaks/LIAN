@@ -29,6 +29,22 @@ T serialize(XmlElement* element) {
 }
 
 template <typename T, typename XmlElement>
+T serializeOrElse(XmlElement* element, const T& orElse) {
+    if (!element) {
+        return orElse;
+    }
+    return serialize<T>(element);
+}
+
+template <typename T, typename XmlElement>
+std::optional<T> serializeOpt(XmlElement* element) {
+    if (!element) {
+        return std::nullopt;
+    }
+    return serialize<T>(element);
+}
+
+template <typename T, typename XmlElement>
 std::vector<T> serializeVector(XmlElement* element) {
     std::stringstream ss;
     ss << std::string(element->GetText());

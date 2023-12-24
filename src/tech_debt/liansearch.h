@@ -8,46 +8,24 @@
 #include "openlist.h"
 #include "search.h"
 #include "logger.h"
+#include "config.h"
 
 
 class LianSearch : public Search {
 public:
-    LianSearch(float angleLimit, int distance, float weight, unsigned int steplimit,
-               float curvatureHeuristicWeight, bool postsmoother, float decreaseDistanceFactor,
-               int distanceMin, double PivotRadius, int numOfParentsToIncreaseRadius);
+    LianSearch(SearchParams params);
 
     ~LianSearch();
     SearchResult startSearch(Logger *Log, const Map &map); // General searching algorithm
 
 private:
+    SearchParams params_;
+
     vec<std::size_t> start_, goal_;
 
-    float angleLimit_; // Maximal value of deviation angle (turning limit)
-
-    int distance_; // Minimal value of length of steps
-
-    int numOfParentsToIncreaseRadius_;
-
     std::vector<int> listOfDistances_;
-    int listOfDistancesSize_;
 
-    float weight_;  // Heuristics weight
-
-    bool postsmoother_; // Smoothing the path after the algorithm
-
-    // Heurisic coefficient:
-    // If there is heuristic that checks deviation of trajectory from line on each
-    // step, this deviation is multiplyed by this coefficient
-    float curvatureHeuristicWeight_;
-
-    float pivotRadius_; // Radius of safety circle around every turn point.
-
-    unsigned int stepLimit_; // Maximum number of iterations, allowed for the algorithm
-
-    unsigned int closeSize_; // Number of elements in close (elements that were already examined)
-
-    float decreaseDistanceFactor_; // Value for decreasing the initial distance value
-    int distanceMin_; // Minimal distance value
+    std::size_t closeSize_; // Number of elements in close (elements that were already examined)
 
     std::vector<std::vector<circleNode>> circleNodes_; // Virtual nodes that create circle around the cell
 
