@@ -21,11 +21,11 @@ public:
 private:
     SearchParams params_;
 
-    vec<std::size_t> start_, goal_;
+    vec<int64_t> start_, goal_;
 
     std::vector<int> listOfDistances_;
 
-    std::size_t closeSize_; // Number of elements in close (elements that were already examined)
+    int64_t closeSize_; // Number of elements in close (elements that were already examined)
 
     std::vector<std::vector<circleNode>> circleNodes_; // Virtual nodes that create circle around the cell
 

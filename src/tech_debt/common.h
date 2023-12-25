@@ -16,7 +16,7 @@
 
 template <typename T>
 struct vec {
-	T x, y;
+	T y, x;
 };
 
 template <typename T, typename XmlElement>

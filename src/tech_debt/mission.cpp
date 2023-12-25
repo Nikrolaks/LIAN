@@ -39,7 +39,7 @@ namespace {
         }
 
         TiXmlElement* point;
-        std::size_t index = 0;
+        int64_t index = 0;
         for (auto iter = path.cbegin(); iter != path.cend(); ++iter, ++index) {
             TiXmlElement point(CNS_TAG_NODE);
             point.SetAttribute(CNS_TAG_ATTR_NUM, index);

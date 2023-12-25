@@ -11,24 +11,24 @@ class Map {
 public:
     explicit Map(const std::string& fileName);
 
-    bool cellIsTraversable(vec<std::size_t> pos) const;
-    bool cellOnGrid(vec<std::size_t> pos) const;
-    bool cellIsObstacle(vec<std::size_t> pos) const;
+    bool cellIsTraversable(vec<int64_t> pos) const;
+    bool cellOnGrid(vec<int64_t> pos) const;
+    bool cellIsObstacle(vec<int64_t> pos) const;
 
-    std::vector<int> &operator[](std::size_t i);
-    const std::vector<int> &operator[](std::size_t i) const;
+    std::vector<int> &operator[](int64_t i);
+    const std::vector<int> &operator[](int64_t i) const;
 
-    std::size_t getWidth() const;
-    std::size_t getHeight() const;
+    int64_t getWidth() const;
+    int64_t getHeight() const;
     double getCellSize() const;
 
-    vec<std::size_t> getStart() const;
-    vec<std::size_t> getGoal() const;
+    vec<int64_t> getStart() const;
+    vec<int64_t> getGoal() const;
 
 private:
-    vec<std::size_t> start_;
-    vec<std::size_t> goal_;
+    vec<int64_t> start_;
+    vec<int64_t> goal_;
     std::vector<std::vector<int>> grid_;
-    std::size_t height_ = 0, width_ = 0;
+    int64_t height_ = 0, width_ = 0;
     double cellSize_;
 };
