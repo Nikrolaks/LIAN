@@ -223,18 +223,19 @@ bool lineSegmentTraverse(const Node& start, const Node& goal, ActionF action) {
         rotate = 3;
     }
 
-    bool alongY = dx >= dy;
-    int stepInc = alongY ? dy : dx;
-    int stepDec = alongY ? dx : dy;
-    int startT = alongY ? y1 : x1;
-    int finishT = alongY ? y2 : x2;
+    bool alongX = dx >= dy;
+    int stepInc = alongX ? dy : dx;
+    int stepDec = alongX ? dx : dy;
+    int startT = alongX ? x1 : y1;
+    int finishT = alongX ? x2 : y2;
 
     bool rotateFirstBit = rotate & 1;
-    int c = !rotateFirstBit ? startT : finishT;
+    int c = !rotateFirstBit ? (x1 ^ y1 ^ startT) : (x2 ^ y2 ^ finishT);
     int dc = !rotateFirstBit ? 1 : -1;
 
     for (int t = startT; t <= finishT; ++t) {
-        if (action(t, c, alongY)) {
+        bool insertAtBegin = rotate == 0 || (rotate == 1 && !alongX) || (rotate == 3 && alongX);
+        if (action(t, c, alongX, insertAtBegin)) {
             return false;
         }
         stepVal += stepInc;
@@ -249,21 +250,26 @@ bool lineSegmentTraverse(const Node& start, const Node& goal, ActionF action) {
 
 void LianSearch::calculateLineSegment(std::vector<Node>& line, const Node& start, const Node& goal) {
     line.clear();
-    lineSegmentTraverse(start, goal, [&line](int t, int c, bool alongY) {
-        if (!alongY) {
-            std::swap(t, c);
-        }
-        line.push_back(Node(t, c));
-        return false;
+    lineSegmentTraverse(start, goal,
+        [&line](int t, int c, bool alongX, bool insertAtBegin) {
+            if (!alongX) {
+                std::swap(t, c);
+            }
+            if (insertAtBegin)
+                line.insert(line.begin(), Node(t, c));
+            else
+                line.push_back(Node(t, c));
+            return false;
         });
 }
 
 bool LianSearch::checkLineSegment(const Map& map, const Node& start, const Node& goal) {
-    return lineSegmentTraverse(start, goal, [&map](std::size_t t, std::size_t c, bool alongY) {
-        if (!alongY) {
-            std::swap(t, c);
-        }
-        return map.cellIsObstacle(vec{ t, c });
+    return lineSegmentTraverse(start, goal,
+        [&map](std::size_t t, std::size_t c, bool alongX, bool insert_at_begin) {
+            if (!alongX) {
+                std::swap(t, c);
+            }
+            return map.cellIsObstacle(vec{ t, c });
         });
 }
 
