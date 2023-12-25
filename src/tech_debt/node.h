@@ -20,7 +20,7 @@ struct Node {
 
     Node*   parent;
 
-    int      i, j;
+    int64_t  i, j;
     double   radius;
     double   F;
     double   g;

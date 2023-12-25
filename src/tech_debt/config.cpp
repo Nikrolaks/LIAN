@@ -38,7 +38,7 @@ Config::Config(const std::string& fileName) {
     params_.baseSegmentLength = std::abs(serialize<double>(element));
 
     element = algorithm->FirstChildElement("isELian");
-    params_.doELian = serializeOrElse<bool>(element, false);
+    params_.doELian = serializeOrElse<int>(element, 0);
 
     element = algorithm->FirstChildElement(CNS_TAG_WEIGHT);
     params_.heuristicWeight = serializeOrElse<double>(element, CN_PTD_W);
@@ -50,7 +50,7 @@ Config::Config(const std::string& fileName) {
     params_.curvatureHeuristicWeight = serializeOrElse<double>(element, 0.0);
         
     element = algorithm->FirstChildElement(CNS_TAG_SMOOTHER);
-    params_.doSmoothing = serializeOrElse<bool>(element, false);
+    params_.doSmoothing = serializeOrElse<int>(element, 0);
 
     element = algorithm->FirstChildElement(CNS_TAG_DECRDISTFACTOR);
     params_.distanceDecreaseCoefficient = serializeOrElse<double>(element, CN_PTD_DDF);
