@@ -196,8 +196,8 @@ void LianSearch::calculateDistances() {
     }
 }
 
-void LianSearch::calculateLineSegment(std::vector<Node>& line,
-    const Node& start, const Node& goal) {
+template <class ActionF>
+bool lineSegmentTraverse(const Node& start, const Node& goal, ActionF action) {
     int x1 = start.i;
     int x2 = goal.i;
     int y1 = start.j;
@@ -206,8 +206,6 @@ void LianSearch::calculateLineSegment(std::vector<Node>& line,
     int dx = abs(x2 - x1), dy = abs(y2 - y1);
     int stepVal = 0;
     int rotate = 0;
-
-    line.clear();
 
     if (x1 > x2 && y1 > y2) {
         std::swap(x1, x2);
@@ -226,172 +224,47 @@ void LianSearch::calculateLineSegment(std::vector<Node>& line,
     }
 
     bool alongY = dx >= dy;
-    bool rotbit = rotate & 1;
     int stepInc = alongY ? dy : dx;
     int stepDec = alongY ? dx : dy;
-    int dc = rotbit ? -1 : 1;
-    int a = alongY ? y1 : x1;
-    int b = alongY ? y2 : x2;
-    int c = 0;
+    int startT = alongY ? y1 : x1;
+    int finishT = alongY ? y2 : x2;
 
-    if (!rotbit && alongY) {
-        c = y1;
-    }
-    else if (!rotbit && !alongY) {
-        c = x1;
-    }
-    else if (rotbit && alongY) {
-        c = y2;
-    }
-    else if (rotbit && !alongY) {
-        c = x2;
-    }
+    bool rotateFirstBit = rotate & 1;
+    int c = !rotateFirstBit ? startT : finishT;
+    int dc = !rotateFirstBit ? 1 : -1;
 
-
-    auto updateLine = [&]() {
-        for (int t = a; t <= b; ++t) {
-            line.push_back(alongY ? Node(t, c) : Node(c, t));
-            stepVal += stepInc;
-            if (stepVal >= stepDec) {
-                c += dc;
-                stepVal -= stepDec;
-            }
+    for (int t = startT; t <= finishT; ++t) {
+        if (action(t, c, alongY)) {
+            return false;
         }
-        };
+        stepVal += stepInc;
+        if (stepVal >= stepDec) {
+            c += dc;
+            stepVal -= stepDec;
+        }
+    }
 
-    updateLine();
+    return true;
 }
 
-bool LianSearch::checkLineSegment(const Map& map, const Node& start,
-    const Node& goal) {
-    std::size_t x1 = start.i;
-    std::size_t x2 = goal.i;
-    std::size_t y1 = start.j;
-    std::size_t y2 = goal.j;
+void LianSearch::calculateLineSegment(std::vector<Node>& line, const Node& start, const Node& goal) {
+    line.clear();
+    lineSegmentTraverse(start, goal, [&line](int t, int c, bool alongY) {
+        if (!alongY) {
+            std::swap(t, c);
+        }
+        line.push_back(Node(t, c));
+        return false;
+        });
+}
 
-    std::size_t x, y;
-    std::size_t dx, dy;
-    std::size_t stepVal = 0;
-    std::size_t rotate = 0;
-
-    if (x1 > x2 && y1 > y2) {
-        std::swap(x1, x2);
-        std::swap(y1, y2);
-
-        dx = x2 - x1;
-        dy = y2 - y1;
-    }
-    else {
-        dx = x2 - x1;
-        dy = y2 - y1;
-
-        if (dx >= 0 && dy >= 0)
-            rotate = 2;
-        else if (dy < 0) {
-            dy = -dy;
-            std::swap(y1, y2);
-            rotate = 1;
+bool LianSearch::checkLineSegment(const Map& map, const Node& start, const Node& goal) {
+    return lineSegmentTraverse(start, goal, [&map](std::size_t t, std::size_t c, bool alongY) {
+        if (!alongY) {
+            std::swap(t, c);
         }
-        else if (dx < 0) {
-            dx = -dx;
-            std::swap(x1, x2);
-            rotate = 3;
-        }
-    }
-
-    if (rotate == 1) {
-        if (dx >= dy) {
-            for (x = x1; x <= x2; ++x) {
-                if (map.cellIsObstacle(vec{ x, y2 })) return false;
-                stepVal += dy;
-                if (stepVal >= dx) {
-                    --y2;
-                    stepVal -= dx;
-                }
-            }
-        }
-        else {
-            for (y = y1; y <= y2; ++y) {
-                if (map.cellIsObstacle(vec{ x2, y })) return false;
-                stepVal += dx;
-                if (stepVal >= dy) {
-                    --x2;
-                    stepVal -= dy;
-                }
-            }
-        }
-        return true;
-    }
-    else if (rotate == 2) {
-        if (dx >= dy) {
-            y = y1;
-            for (x = x1; x <= x2; ++x) {
-                if (map.cellIsObstacle(vec{ x, y1 })) return false;
-                stepVal += dy;
-                if (stepVal >= dx) {
-                    ++y1;
-                    stepVal -= dx;
-                }
-            }
-            return true;
-        }
-        else {
-            for (y = y1; y <= y2; ++y) {
-                if (map.cellIsObstacle(vec{ x1, y })) return false;
-                stepVal += dx;
-                if (stepVal >= dy) {
-                    ++x1;
-                    stepVal -= dy;
-                }
-            }
-            return true;
-        }
-    }
-    else if (rotate == 3) {
-        if (dx >= dy) {
-            for (x = x1; x <= x2; ++x) {
-                if (map.cellIsObstacle(vec{ x, y2 })) return false;
-                stepVal += dy;
-                if (stepVal >= dx) {
-                    --y2;
-                    stepVal -= dx;
-                }
-            }
-        }
-        else {
-            for (y = y1; y <= y2; ++y) {
-                if (map.cellIsObstacle(vec{ x2, y })) return false;
-                stepVal += dx;
-                if (stepVal >= dy) {
-                    --x2;
-                    stepVal -= dy;
-                }
-            }
-        }
-        return true;
-    }
-
-    if (dx >= dy) {
-        for (x = x1; x <= x2; ++x) {
-            if (map.cellIsObstacle(vec{ x, y1 })) return false;
-            stepVal += dy;
-            if (stepVal >= dx) {
-                ++y1;
-                stepVal -= dx;
-            }
-        }
-    }
-    else {
-        for (y = y1; y <= y2; ++y) {
-            if (map.cellIsObstacle(vec{ x1, y })) return false;
-            stepVal += dx;
-            if (stepVal >= dy) {
-                ++x1;
-                stepVal -= dy;
-            }
-        }
-    }
-    return true;
+        return map.cellIsObstacle(vec{ t, c });
+        });
 }
 
 bool LianSearch::stopCriterion() {
