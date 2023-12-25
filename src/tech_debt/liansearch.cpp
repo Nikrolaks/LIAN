@@ -11,6 +11,11 @@
  */
 
 namespace {
+    double getCost(int a_i, int a_j, int b_i, int b_j) {
+        return sqrt(abs(a_i - b_i) * abs(a_i - b_i) +
+            abs(a_j - b_j) * abs(a_j - b_j));
+    }
+
     void saveIterationToLog(Logger* logger, int closeSize, const Node& curNode) {
         auto space = logger->logSpace<CN_LOGLVL_ITER>(CNS_TAG_ITERS);
         if (!space) {
@@ -469,11 +474,6 @@ bool LianSearch::stopCriterion() {
     }
 
     return false;
-}
-
-double LianSearch::getCost(int a_i, int a_j, int b_i, int b_j) const {
-    return sqrt(abs(a_i - b_i) * abs(a_i - b_i) +
-        abs(a_j - b_j) * abs(a_j - b_j));
 }
 
 double LianSearch::calcAngle(const Node& dad, const Node& node,

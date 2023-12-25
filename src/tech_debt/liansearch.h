@@ -52,8 +52,6 @@ private:
     // check that there are no obstacle in a safety radius from a turn point
     bool checkPivotCircle(const Map &map, const Node &center);
 
-    double getCost(int a_i, int a_j, int b_i, int b_j) const;
-
     double calcAngle(const Node &dad, const Node &node, const Node &son) const;
     bool checkAngle(const Node &dad, const Node &node, const Node &son) const;
 
