@@ -203,131 +203,63 @@ void LianSearch::calculateLineSegment(std::vector<Node>& line,
     int y1 = start.j;
     int y2 = goal.j;
 
-    int x, y;
-    int dx, dy;
-    int StepVal = 0;
-    int Rotate = 0;
+    int dx = abs(x2 - x1), dy = abs(y2 - y1);
+    int stepVal = 0;
+    int rotate = 0;
 
     line.clear();
 
     if (x1 > x2 && y1 > y2) {
         std::swap(x1, x2);
         std::swap(y1, y2);
-
-        dx = x2 - x1;
-        dy = y2 - y1;
     }
-    else {
-        dx = x2 - x1;
-        dy = y2 - y1;
-
-        if (dx >= 0 && dy >= 0)
-            Rotate = 2;
-        else if (dy < 0) {
-            dy = -dy;
-            std::swap(y1, y2);
-
-            Rotate = 1;
-        }
-        else if (dx < 0) {
-            dx = -dx;
-            std::swap(x1, x2);
-
-            Rotate = 3;
-        }
+    else if (x2 - x1 >= 0 && y2 - y1 >= 0) {
+        rotate = 2;
+    }
+    else if (y2 - y1 < 0) {
+        std::swap(y1, y2);
+        rotate = 1;
+    }
+    else if (x2 - x1 < 0) {
+        std::swap(x1, x2);
+        rotate = 3;
     }
 
-    if (Rotate == 1) {
-        if (dx >= dy) {
-            for (x = x1; x <= x2; ++x) {
-                line.push_back(Node(x, y2));
-                StepVal += dy;
-                if (StepVal >= dx) {
-                    --y2;
-                    StepVal -= dx;
-                }
-            }
-        }
-        else {
-            for (y = y1; y <= y2; ++y) {
-                line.insert(line.begin(), Node(x2, y));
-                StepVal += dx;
-                if (StepVal >= dy) {
-                    --x2;
-                    StepVal -= dy;
-                }
-            }
-        }
-        return;
+    bool alongY = dx >= dy;
+    bool rotbit = rotate & 1;
+    int stepInc = alongY ? dy : dx;
+    int stepDec = alongY ? dx : dy;
+    int dc = rotbit ? -1 : 1;
+    int a = alongY ? y1 : x1;
+    int b = alongY ? y2 : x2;
+    int c = 0;
+
+    if (!rotbit && alongY) {
+        c = y1;
     }
-    else if (Rotate == 2) {
-        if (dx >= dy) {
-            for (x = x1; x <= x2; ++x) {
-                line.push_back(Node(x, y1));
-                StepVal += dy;
-                if (StepVal >= dx) {
-                    ++y1;
-                    StepVal -= dx;
-                }
-            }
-            return;
-        }
-        else {
-            for (y = y1; y <= y2; ++y) {
-                line.push_back(Node(x1, y));
-                StepVal += dx;
-                if (StepVal >= dy) {
-                    ++x1;
-                    StepVal -= dy;
-                }
-            }
-            return;
-        }
+    else if (!rotbit && !alongY) {
+        c = x1;
     }
-    else if (Rotate == 3) {
-        if (dx >= dy) {
-            for (x = x1; x <= x2; ++x) {
-                line.insert(line.begin(), Node(x, y2));
-                StepVal += dy;
-                if (StepVal >= dx) {
-                    --y2;
-                    StepVal -= dx;
-                }
-            }
-        }
-        else {
-            for (y = y1; y <= y2; ++y) {
-                line.push_back(Node(x2, y));
-                StepVal += dx;
-                if (StepVal >= dy) {
-                    --x2;
-                    StepVal -= dy;
-                }
-            }
-        }
-        return;
+    else if (rotbit && alongY) {
+        c = y2;
+    }
+    else if (rotbit && !alongY) {
+        c = x2;
     }
 
-    if (dx >= dy) {
-        for (x = x1; x <= x2; ++x) {
-            line.insert(line.begin(), Node(x, y1));
-            StepVal += dy;
-            if (StepVal >= dx) {
-                ++y1;
-                StepVal -= dx;
+
+    auto updateLine = [&]() {
+        for (int t = a; t <= b; ++t) {
+            line.push_back(alongY ? Node(t, c) : Node(c, t));
+            stepVal += stepInc;
+            if (stepVal >= stepDec) {
+                c += dc;
+                stepVal -= stepDec;
             }
         }
-    }
-    else {
-        for (y = y1; y <= y2; ++y) {
-            line.insert(line.begin(), Node(x1, y));
-            StepVal += dx;
-            if (StepVal >= dy) {
-                ++x1;
-                StepVal -= dy;
-            }
-        }
-    }
+        };
+
+    updateLine();
 }
 
 bool LianSearch::checkLineSegment(const Map& map, const Node& start,
@@ -339,8 +271,8 @@ bool LianSearch::checkLineSegment(const Map& map, const Node& start,
 
     std::size_t x, y;
     std::size_t dx, dy;
-    std::size_t StepVal = 0;
-    std::size_t Rotate = 0;
+    std::size_t stepVal = 0;
+    std::size_t rotate = 0;
 
     if (x1 > x2 && y1 > y2) {
         std::swap(x1, x2);
@@ -354,51 +286,51 @@ bool LianSearch::checkLineSegment(const Map& map, const Node& start,
         dy = y2 - y1;
 
         if (dx >= 0 && dy >= 0)
-            Rotate = 2;
+            rotate = 2;
         else if (dy < 0) {
             dy = -dy;
             std::swap(y1, y2);
-            Rotate = 1;
+            rotate = 1;
         }
         else if (dx < 0) {
             dx = -dx;
             std::swap(x1, x2);
-            Rotate = 3;
+            rotate = 3;
         }
     }
 
-    if (Rotate == 1) {
+    if (rotate == 1) {
         if (dx >= dy) {
             for (x = x1; x <= x2; ++x) {
                 if (map.cellIsObstacle(vec{ x, y2 })) return false;
-                StepVal += dy;
-                if (StepVal >= dx) {
+                stepVal += dy;
+                if (stepVal >= dx) {
                     --y2;
-                    StepVal -= dx;
+                    stepVal -= dx;
                 }
             }
         }
         else {
             for (y = y1; y <= y2; ++y) {
                 if (map.cellIsObstacle(vec{ x2, y })) return false;
-                StepVal += dx;
-                if (StepVal >= dy) {
+                stepVal += dx;
+                if (stepVal >= dy) {
                     --x2;
-                    StepVal -= dy;
+                    stepVal -= dy;
                 }
             }
         }
         return true;
     }
-    else if (Rotate == 2) {
+    else if (rotate == 2) {
         if (dx >= dy) {
             y = y1;
             for (x = x1; x <= x2; ++x) {
                 if (map.cellIsObstacle(vec{ x, y1 })) return false;
-                StepVal += dy;
-                if (StepVal >= dx) {
+                stepVal += dy;
+                if (stepVal >= dx) {
                     ++y1;
-                    StepVal -= dx;
+                    stepVal -= dx;
                 }
             }
             return true;
@@ -406,33 +338,33 @@ bool LianSearch::checkLineSegment(const Map& map, const Node& start,
         else {
             for (y = y1; y <= y2; ++y) {
                 if (map.cellIsObstacle(vec{ x1, y })) return false;
-                StepVal += dx;
-                if (StepVal >= dy) {
+                stepVal += dx;
+                if (stepVal >= dy) {
                     ++x1;
-                    StepVal -= dy;
+                    stepVal -= dy;
                 }
             }
             return true;
         }
     }
-    else if (Rotate == 3) {
+    else if (rotate == 3) {
         if (dx >= dy) {
             for (x = x1; x <= x2; ++x) {
                 if (map.cellIsObstacle(vec{ x, y2 })) return false;
-                StepVal += dy;
-                if (StepVal >= dx) {
+                stepVal += dy;
+                if (stepVal >= dx) {
                     --y2;
-                    StepVal -= dx;
+                    stepVal -= dx;
                 }
             }
         }
         else {
             for (y = y1; y <= y2; ++y) {
                 if (map.cellIsObstacle(vec{ x2, y })) return false;
-                StepVal += dx;
-                if (StepVal >= dy) {
+                stepVal += dx;
+                if (stepVal >= dy) {
                     --x2;
-                    StepVal -= dy;
+                    stepVal -= dy;
                 }
             }
         }
@@ -442,20 +374,20 @@ bool LianSearch::checkLineSegment(const Map& map, const Node& start,
     if (dx >= dy) {
         for (x = x1; x <= x2; ++x) {
             if (map.cellIsObstacle(vec{ x, y1 })) return false;
-            StepVal += dy;
-            if (StepVal >= dx) {
+            stepVal += dy;
+            if (stepVal >= dx) {
                 ++y1;
-                StepVal -= dx;
+                stepVal -= dx;
             }
         }
     }
     else {
         for (y = y1; y <= y2; ++y) {
             if (map.cellIsObstacle(vec{ x1, y })) return false;
-            StepVal += dx;
-            if (StepVal >= dy) {
+            stepVal += dx;
+            if (stepVal >= dy) {
                 ++x1;
-                StepVal -= dy;
+                stepVal -= dy;
             }
         }
     }
